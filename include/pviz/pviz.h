@@ -67,11 +67,11 @@ class PViz
     /* \brief display a throttled set of arm configurations in a trajectory by default throttle = 5 */
     void visualizeArmConfigurations(const std::vector<std::vector<double> > &traj, int arm, int throttle);
 
-    void visualizeRobotMeshes(double hue, std::string ns, int start_id, std::vector<geometry_msgs::PoseStamped> &poses);
+    void visualizeRobotMeshes(double hue, std::string ns, int start_id, std::vector<geometry_msgs::PoseStamped> &poses, bool use_embedded_materials = false);
 
-    void visualizeRobot(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, std::vector<double> &base_pos, double torso_pos, double hue, std::string ns, int id);
+    void visualizeRobot(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, std::vector<double> &base_pos, double torso_pos, double hue, std::string ns, int id, bool use_embedded_materials = false);
 
-    void visualizeRobot(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, BodyPose &body_pos, double hue, std::string ns, int id);
+    void visualizeRobot(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, BodyPose &body_pos, double hue, std::string ns, int id, bool use_embedded_materials = false);
 
     void visualizeRobotWithTitle(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, BodyPose &body_pos, double hue, std::string ns, int id, std::string title);
 
@@ -150,6 +150,10 @@ class PViz
 
     void publishMarkerArray(visualization_msgs::MarkerArray &marker_array);
 
+    visualization_msgs::MarkerArray getRobotMeshesMarkerMsg(double hue, std::string ns, int id, std::vector<geometry_msgs::PoseStamped> &poses, bool use_embedded_materials = false);
+
+    visualization_msgs::MarkerArray getRobotMarkerMsg(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, BodyPose &body_pos, double hue, std::string ns, int id, bool use_embedded_materials = false);
+
   private:
 
     ros::NodeHandle nh_;
@@ -197,10 +201,6 @@ class PViz
     double position_tolerance_;
     double orientation_tolerance_;
     bool goal_is_6dof_;
-
-    visualization_msgs::MarkerArray getRobotMeshesMarkerMsg(double hue, std::string ns, int id, std::vector<geometry_msgs::PoseStamped> &poses);
-
-    visualization_msgs::MarkerArray getRobotMarkerMsg(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, BodyPose &body_pos, double hue, std::string ns, int id);
 
 };
 

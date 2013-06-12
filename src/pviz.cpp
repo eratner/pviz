@@ -67,7 +67,7 @@ void HSVtoRGB( double *r, double *g, double *b, double h, double s, double v )
 PViz::PViz() : ph_("~")
 {
   num_joints_ = 8; //arm + torso
-  reference_frame_ = "map"; // maybe should be base_footprint?
+  reference_frame_ = "/map"; // maybe should be base_footprint?
 
   srand (time(NULL));
 
@@ -102,15 +102,15 @@ PViz::PViz() : ph_("~")
 
   // arm meshes
   arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_yaw.stl");
-  arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_lift.stl");
-  arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/upper_arm_roll.stl");
-  arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/upper_arm.stl");
-  arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/elbow_flex.stl");
+  arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_lift.dae");
+  arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/upper_arm_roll.dae");
+  arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/upper_arm.dae");
+  arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/elbow_flex.dae");
   arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/forearm_roll.stl");  
-  arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/forearm.stl");
-  arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/wrist_flex.stl");
+  arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/forearm.dae");
+  arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/wrist_flex.dae");
   arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/wrist_roll.stl");
-  arm_meshes_.push_back("package://pr2_description/meshes/gripper_v0/gripper_palm.stl");
+  arm_meshes_.push_back("package://pr2_description/meshes/gripper_v0/gripper_palm.dae");
 
   // gripper meshes
   gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/upper_finger_r.stl");
@@ -119,10 +119,10 @@ PViz::PViz() : ph_("~")
   gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/finger_tip_l.stl");
 
   // torso_meshes
-  torso_meshes_.push_back("package://pr2_description/meshes/torso_v0/torso_lift.stl");
+  torso_meshes_.push_back("package://pr2_description/meshes/torso_v0/torso_lift.dae");
   
   // base meshes
-  base_meshes_.push_back("package://pr2_description/meshes/base_v0/base.stl");
+  base_meshes_.push_back("package://pr2_description/meshes/base_v0/base.dae");
 
   robot_meshes_.insert(robot_meshes_.end(),base_meshes_.begin(), base_meshes_.end());  // 1
   robot_meshes_.insert(robot_meshes_.end(),torso_meshes_.begin(), torso_meshes_.end()); // 1
@@ -1343,7 +1343,7 @@ bool PViz::computeFKforVisualizationWithKDL(const std::vector<double> &jnt0_pos,
   return true;
 }
 
-void PViz::visualizeRobotMeshes(double hue, std::string ns, int id, std::vector<geometry_msgs::PoseStamped> &poses)
+void PViz::visualizeRobotMeshes(double hue, std::string ns, int id, std::vector<geometry_msgs::PoseStamped> &poses, bool use_embedded_materials)
 {
   double r,g,b;
   marker_array_.markers.clear();
@@ -1364,11 +1364,21 @@ void PViz::visualizeRobotMeshes(double hue, std::string ns, int id, std::vector<
     marker_array_.markers[i].scale.x = 1.0;
     marker_array_.markers[i].scale.y = 1.0;
     marker_array_.markers[i].scale.z = 1.0;
-
-    marker_array_.markers[i].color.r = r;
-    marker_array_.markers[i].color.g = g;
-    marker_array_.markers[i].color.b = b;
-    marker_array_.markers[i].color.a = 0.4;
+    if(use_embedded_materials)
+    {
+      marker_array_.markers[i].color.r = 0;
+      marker_array_.markers[i].color.g = 0;
+      marker_array_.markers[i].color.b = 0;
+      marker_array_.markers[i].color.a = 0;
+      marker_array_.markers[i].mesh_use_embedded_materials = true;
+    }
+    else
+    {
+      marker_array_.markers[i].color.r = r;
+      marker_array_.markers[i].color.g = g;
+      marker_array_.markers[i].color.b = b;
+      marker_array_.markers[i].color.a = 0.4;
+    }
     marker_array_.markers[i].lifetime = ros::Duration(120.0);
 
     //ROS_INFO("i=%d",i);
@@ -1378,7 +1388,7 @@ void PViz::visualizeRobotMeshes(double hue, std::string ns, int id, std::vector<
   marker_array_publisher_.publish(marker_array_);
 }
 
-visualization_msgs::MarkerArray PViz::getRobotMeshesMarkerMsg(double hue, std::string ns, int id, std::vector<geometry_msgs::PoseStamped> &poses)
+visualization_msgs::MarkerArray PViz::getRobotMeshesMarkerMsg(double hue, std::string ns, int id, std::vector<geometry_msgs::PoseStamped> &poses, bool use_embedded_materials)
 {
   double r,g,b;
   marker_array_.markers.clear();
@@ -1398,10 +1408,21 @@ visualization_msgs::MarkerArray PViz::getRobotMeshesMarkerMsg(double hue, std::s
     marker_array_.markers[i].scale.x = 1.0;
     marker_array_.markers[i].scale.y = 1.0;
     marker_array_.markers[i].scale.z = 1.0;
-    marker_array_.markers[i].color.r = r;
-    marker_array_.markers[i].color.g = g;
-    marker_array_.markers[i].color.b = b;
-    marker_array_.markers[i].color.a = 0.4;
+    if(use_embedded_materials)
+    {
+      marker_array_.markers[i].color.r = 0;
+      marker_array_.markers[i].color.g = 0;
+      marker_array_.markers[i].color.b = 0;
+      marker_array_.markers[i].color.a = 0;
+      marker_array_.markers[i].mesh_use_embedded_materials = true;
+    }
+    else
+    {
+      marker_array_.markers[i].color.r = r;
+      marker_array_.markers[i].color.g = g;
+      marker_array_.markers[i].color.b = b;
+      marker_array_.markers[i].color.a = 0.4;
+    }
     marker_array_.markers[i].lifetime = ros::Duration(120.0);
     marker_array_.markers[i].mesh_resource = robot_meshes_[i];
   }
@@ -1417,17 +1438,17 @@ void PViz::getMaptoRobotTransform(double x, double y, double theta, KDL::Frame &
   frame = base_footprint_in_map;
 }
 
-void PViz::visualizeRobot(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, std::vector<double> &base_pos, double torso_pos, double hue, std::string ns, int id)
+void PViz::visualizeRobot(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, std::vector<double> &base_pos, double torso_pos, double hue, std::string ns, int id, bool use_embedded_materials)
 {
   std::vector<geometry_msgs::PoseStamped> poses;
   if(!computeFKforVisualizationWithKDL(jnt0_pos, jnt1_pos, base_pos, torso_pos, poses))
 
     ROS_WARN("Unable to compute forward kinematics.");
   else
-    visualizeRobotMeshes(hue, ns, id, poses);
+    visualizeRobotMeshes(hue, ns, id, poses, use_embedded_materials);
 }
 
-void PViz::visualizeRobot(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, BodyPose &body_pos, double hue, std::string ns, int id)
+void PViz::visualizeRobot(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, BodyPose &body_pos, double hue, std::string ns, int id, bool use_embedded_materials)
 {
   double torso_pos;
   std::vector<double> base_pos(3,0);
@@ -1442,10 +1463,10 @@ void PViz::visualizeRobot(std::vector<double> &jnt0_pos, std::vector<double> &jn
 
     ROS_WARN("Unable to compute forward kinematics.");
   else
-    visualizeRobotMeshes(hue, ns, id, poses);
+    visualizeRobotMeshes(hue, ns, id, poses, use_embedded_materials);
 }
 
-visualization_msgs::MarkerArray PViz::getRobotMarkerMsg(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, BodyPose &body_pos, double hue, std::string ns, int id)
+visualization_msgs::MarkerArray PViz::getRobotMarkerMsg(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, BodyPose &body_pos, double hue, std::string ns, int id, bool use_embedded_materials)
 {
   double torso_pos;
   std::vector<double> base_pos(3,0);
@@ -1462,7 +1483,7 @@ visualization_msgs::MarkerArray PViz::getRobotMarkerMsg(std::vector<double> &jnt
     return visualization_msgs::MarkerArray();
   } 
   else
-    return getRobotMeshesMarkerMsg(hue, ns, id, poses);
+    return getRobotMeshesMarkerMsg(hue, ns, id, poses, use_embedded_materials);
 }
 
 bool PViz::parseCSVFile(std::string filename, int num_cols, std::vector<std::vector<double> > &data)
