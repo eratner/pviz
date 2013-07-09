@@ -113,10 +113,14 @@ PViz::PViz() : ph_("~")
   arm_meshes_.push_back("package://pr2_description/meshes/gripper_v0/gripper_palm.dae");
 
   // gripper meshes
-  gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/upper_finger_r.stl");
-  gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/finger_tip_r.stl");
-  gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/upper_finger_l.stl");
-  gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/finger_tip_l.stl");
+  //gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/upper_finger_r.stl");
+  gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/l_finger.dae");
+  //gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/finger_tip_r.stl");
+  gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/l_finger_tip.dae");
+  // gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/upper_finger_l.stl");
+  gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/l_finger.dae");  
+  // gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/finger_tip_l.stl");
+  gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/l_finger_tip.dae");
 
   // torso_meshes
   torso_meshes_.push_back("package://pr2_description/meshes/torso_v0/torso_lift.dae");
@@ -1323,6 +1327,14 @@ bool PViz::computeFKforVisualizationWithKDL(const std::vector<double> &jnt0_pos,
     {
       if(!computeFKwithKDL(jnt0_pos, base_pos, torso_pos, RIGHT, i+1, poses[i].pose))
         return false;
+
+      // right arm, right finger (to rotate the mesh)
+      if(i == 13 || i == 12)
+      {
+	geometry_msgs::Pose p;
+	p.orientation = tf::createQuaternionMsgFromRollPitchYaw(M_PI, 0, 0);
+	multiply(poses[i].pose, p, poses[i].pose);
+      }
     }
     // right arm - left finger only
     else if(13 < i && i < 16)
@@ -1335,6 +1347,13 @@ bool PViz::computeFKforVisualizationWithKDL(const std::vector<double> &jnt0_pos,
      {
       if(!computeFKwithKDL(jnt1_pos, base_pos, torso_pos, LEFT, i-13, poses[i].pose))
         return false;
+
+      if(i == 26 || i == 27)
+      {
+	geometry_msgs::Pose p;
+	p.orientation = tf::createQuaternionMsgFromRollPitchYaw(M_PI, 0, 0);
+	multiply(poses[i].pose, p, poses[i].pose);
+      }
     }
     // left arm - left finger only
     else /* if(27 < i) */
@@ -1691,26 +1710,42 @@ void PViz::visualizeGripper(const geometry_msgs::Pose &pose, double hue, std::st
 
 void PViz::getGripperMeshesMarkerMsg(const geometry_msgs::Pose &pose, double hue, std::string ns, int id, bool open, std::vector<visualization_msgs::Marker> &markers)
 {
+  static geometry_msgs::Pose rot;
+  rot.orientation = tf::createQuaternionMsgFromRollPitchYaw(M_PI, 0, 0);
   static geometry_msgs::Pose g1, g2, g3, g4, g5, g6, g7, g8;
   // g1 = r_gripper_r_finger_link in r_gripper_palm - OPEN
   g1.position.x = 0.077; g1.position.y = -0.010; g1.position.z = 0.00;
   g1.orientation.x = 0.0; g1.orientation.y = 0.0; g1.orientation.z = -0.231; g1.orientation.w = 0.973;
+  multiply(g1, rot, g1);
   // g2 = r_gripper_l_finger_link in r_gripper_palm - OPEN
-  g2 = g1; g2.position.y = 0.010; g2.orientation.z = 0.231;
+  g2.position.x = 0.077; g2.position.y = 0.010; g2.position.z = 0.00;
+  g2.orientation.x = 0.0; g2.orientation.y = 0.0; g2.orientation.z = 0.231; g2.orientation.w = 0.973;
+  // g2 = g1; g2.position.y = 0.010; g2.orientation.z = 0.231;
   // g3 = r_gripper_r_finger_tip_link in r_gripper_palm - OPEN
   g3.position.x = 0.156; g3.position.y = -0.056; g3.position.z = 0.00;
   g3.orientation.x = 0.0; g3.orientation.y = 0.0; g3.orientation.z = 0.0; g3.orientation.w = 1.000;
+  multiply(g3, rot, g3);
   // g4 = r_gripper_l_finger_tip_link in r_gripper_palm - OPEN
-  g4 = g3; g4.position.y = 0.056;
+  g4.position.x = 0.156; g4.position.y = 0.056; g4.position.z = 0.00;
+  g4.orientation.x = 0.0; g4.orientation.y = 0.0; g4.orientation.z = 0.0; g4.orientation.w = 1.000;
+  // g4 = g3; g4.position.y = 0.056;
   // g5 = r_gripper_r_finger_link in r_gripper_palm - CLOSED
-  g5 = g1; g5.orientation.x = 0.0; g5.orientation.y = 0.0; g5.orientation.z = 0.004; g5.orientation.w = 1.000;
+  g5.position.x = 0.077; g5.position.y = -0.010; g5.position.z = 0.00;
+  g5.orientation.x = 0.0; g5.orientation.y = 0.0; g5.orientation.z = 0.004; g5.orientation.w = 1.000;
+  // g5 = g1; g5.orientation.x = 0.0; g5.orientation.y = 0.0; g5.orientation.z = 0.004; g5.orientation.w = 1.000;
+  multiply(g5, rot, g5);
   // g6 = r_gripper_l_finger_link in r_gripper_palm - CLOSED
-  g6 = g5; g6.position.y = 0.010; g6.orientation.z = -0.004;
+  g6.position.x = 0.077; g6.position.y = 0.010; g6.position.z = 0.00;
+  g6.orientation.x = 0.0; g6.orientation.y = 0.0; g6.orientation.z = -0.004; g6.orientation.w = 1.000;
+  // g6 = g5; g6.position.y = 0.010; g6.orientation.z = -0.004;
   // g7 = r_gripper_r_finger_tip_link in r_gripper_palm - CLOSED
   g7.position.x = 0.168; g7.position.y = -0.014; g7.position.z = 0.00;
   g7.orientation.x = 0.0; g7.orientation.y = 0.0; g7.orientation.z = 0.0; g7.orientation.w = 1.000;
+  multiply(g7, rot, g7);
   // g8 = r_gripper_l_finger_tip_link in r_gripper_palm - CLOSED
-  g8 = g7; g8.position.y = 0.014;
+  g8.position.x = 0.168; g8.position.y = 0.014; g8.position.z = 0.00;
+  g8.orientation.x = 0.0; g8.orientation.y = 0.0; g8.orientation.z = 0.0; g8.orientation.w = 1.000;
+  // g8 = g7; g8.position.y = 0.014;
 
   double r,g,b;
   visualization_msgs::Marker m;

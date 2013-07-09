@@ -150,6 +150,10 @@ class PViz
 
     void publishMarkerArray(visualization_msgs::MarkerArray &marker_array);
 
+    visualization_msgs::MarkerArray getRobotMeshesMarkerMsg(double hue, std::string ns, int id, std::vector<geometry_msgs::PoseStamped> &poses, bool use_embedded_materials = false);
+
+    visualization_msgs::MarkerArray getRobotMarkerMsg(std::vector<double> &jnt0_pos, std::vector<double> &jnt1_pos, BodyPose &body_pos, double hue, std::string ns, int id, bool use_embedded_materials = false);
+
     void visualizeGripper(const geometry_msgs::Pose &pose, double hue, std::string ns, int id, bool open);
 
     void getGripperMeshesMarkerMsg(const geometry_msgs::Pose &pose, double hue, std::string ns, int id, bool open, std::vector<visualization_msgs::Marker> &markers);
