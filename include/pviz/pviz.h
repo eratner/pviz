@@ -160,6 +160,8 @@ class PViz
 
     void multiply(const geometry_msgs::Pose &a, const geometry_msgs::Pose &b, geometry_msgs::Pose &c);
 
+    void visualizeText(double x, double y, double z, double size, std::string text, int hue, std::string ns, int id);
+
   private:
 
     ros::NodeHandle nh_;

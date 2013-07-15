@@ -1825,3 +1825,34 @@ void PViz::multiply(const geometry_msgs::Pose &a, const geometry_msgs::Pose &b, 
   btc = bta * btb;
   tf::poseTFToMsg(btc, c);
 }
+
+void PViz::visualizeText(double x, double y, double z, double size, std::string text, int hue, std::string ns, int id)
+{
+  double r=0,g=0,b=0;
+  visualization_msgs::Marker marker;
+
+  HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
+
+  marker.header.stamp = ros::Time::now();
+  marker.header.frame_id = reference_frame_;
+  marker.ns = ns;
+  marker.id = id;
+  marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+  marker.action = visualization_msgs::Marker::ADD;
+  marker.scale.x = size;
+  marker.scale.y = size;
+  marker.scale.z = size;
+  marker.pose.position.x = x;
+  marker.pose.position.y = y;
+  marker.pose.position.z = z;
+  marker.pose.orientation.w = 1.0;
+
+  marker.color.r = r;
+  marker.color.g = g;
+  marker.color.b = b;
+  marker.color.a = 1.0;
+  marker.text = text;
+  marker.lifetime = ros::Duration(0.0);
+  marker_publisher_.publish(marker);
+}
+
