@@ -236,8 +236,9 @@ bool PViz::computeFKwithKDL(const std::vector<double> &angles, std::vector<doubl
     jnt_pos_in_(9) = 0;
   }
   else if(angles.size() == 8)
-    jnt_pos_in_(9) = 0;
-
+  {
+    jnt_pos_in_(9) = jnt_pos_in_(8);
+  }
   //ROS_WARN("jnt_pos_in:"); 
   //for(int i = 0; i < jnt_pos_in_.rows(); ++i)
   //  ROS_WARN("%d: %0.3f", i, jnt_pos_in_(i));
@@ -1781,6 +1782,126 @@ void PViz::getGripperMeshesMarkerMsg(const geometry_msgs::Pose &pose, double hue
     p[2] = g7;
     p[3] = g8;
   }
+
+  // palm
+  m.mesh_resource = arm_meshes_[9];
+  m.id = id;
+  m.pose = pose;
+  markers.push_back(m);
+
+  // upper_finger_r
+  m.mesh_resource = gripper_meshes_[0];
+  m.id++;
+  multiply(pose, p[0], m.pose);
+  markers.push_back(m);
+
+  // upper_finger_l
+  m.mesh_resource = gripper_meshes_[2];
+  m.id++;
+  multiply(pose, p[1], m.pose);
+  markers.push_back(m);
+
+  m.color.r = 90.0/255.0;
+  m.color.g = 90.0/255.0;
+  m.color.b = 90.0/255.0;
+
+  // finger_tip_r
+  m.mesh_resource = gripper_meshes_[1];
+  m.id++;
+  multiply(pose, p[2], m.pose);
+  markers.push_back(m);
+
+  // finger_tip_l
+  m.mesh_resource = gripper_meshes_[3];
+  m.id++;
+  multiply(pose, p[3], m.pose);
+  markers.push_back(m);
+}
+
+void PViz::getGripperMeshesMarkerMsg(const geometry_msgs::Pose &pose, double hue, 
+				     std::string ns, int id, double position, 
+				     std::vector<visualization_msgs::Marker> &markers)
+{
+  static geometry_msgs::Pose rot;
+  rot.orientation = tf::createQuaternionMsgFromRollPitchYaw(M_PI, 0, 0);
+  // r_gripper_r_finger_link in r_gripper_palm
+  static geometry_msgs::Pose rgrfl_in_rgp;
+  rgrfl_in_rgp.position.x = 0.077;
+  rgrfl_in_rgp.position.y = -0.010;
+  rgrfl_in_rgp.position.z = 0.00;
+  rgrfl_in_rgp.orientation.x = 0.0;
+  rgrfl_in_rgp.orientation.y = 0.0;
+  rgrfl_in_rgp.orientation.z = 0.004;
+  rgrfl_in_rgp.orientation.x = 1.000;
+  multiply(rgrfl_in_rgp, rot, rgrfl_in_rgp);
+
+  // r_gripper_l_finger_link in r_gripper_palm
+  static geometry_msgs::Pose rglfl_in_rgp;
+  rglfl_in_rgp.position.x = 0.077;
+  rglfl_in_rgp.position.y = 0.010;
+  rglfl_in_rgp.position.z = 0.00;
+  rglfl_in_rgp.orientation.x = 0.0;
+  rglfl_in_rgp.orientation.y = 0.0;
+  rglfl_in_rgp.orientation.z = -0.004;
+  rglfl_in_rgp.orientation.x = 1.000;
+    
+  // r_gripper_r_finger_tip_link in r_gripper_r_finger_link
+  static geometry_msgs::Pose rgrftl_in_rgrfl;
+  rgrftl_in_rgrfl.position.x = 0.091;
+  rgrftl_in_rgrfl.position.y = -0.005;
+  rgrftl_in_rgrfl.position.z = 0.000;
+  rgrftl_in_rgrfl.orientation.x = 0.000;
+  rgrftl_in_rgrfl.orientation.y = 0.000;
+  rgrftl_in_rgrfl.orientation.z = 0.001;
+  rgrftl_in_rgrfl.orientation.w = 1.000;
+
+  // r_gripper_l_finger_tip_link in r_gripper_l_finger_link
+  static geometry_msgs::Pose rglftl_in_rglfl;
+  rglftl_in_rglfl.position.x = 0.091;
+  rglftl_in_rglfl.position.y = 0.005;
+  rglftl_in_rglfl.position.z = 0.000;
+  rglftl_in_rglfl.orientation.x = 0.000;
+  rglftl_in_rglfl.orientation.y = 0.000;
+  rglftl_in_rglfl.orientation.z = -0.001;
+  rglftl_in_rglfl.orientation.w = 1.000;
+
+  // Open the gripper appropriately.
+  geometry_msgs::Pose open;
+  open.orientation = tf::createQuaternionMsgFromRollPitchYaw(0, 0, position);
+  multiply(rgrfl_in_rgp, open, rgrfl_in_rgp);
+  multiply(rglfl_in_rgp, open, rglfl_in_rgp);
+
+  open.orientation = tf::createQuaternionMsgFromRollPitchYaw(0, 0, -position);
+  multiply(rgrftl_in_rgrfl, open, rgrftl_in_rgrfl);
+  multiply(rglftl_in_rglfl, open, rglftl_in_rglfl);
+
+  geometry_msgs::Pose rgrftl_in_rgp;
+  multiply(rgrfl_in_rgp, rgrftl_in_rgrfl, rgrftl_in_rgp);
+  geometry_msgs::Pose rglftl_in_rgp;
+  multiply(rglfl_in_rgp, rglftl_in_rglfl, rglftl_in_rgp);
+
+  double r, g, b;
+  visualization_msgs::Marker m;
+  std::vector<geometry_msgs::Pose> p(4);
+  p[0] = rgrfl_in_rgp;
+  p[1] = rglfl_in_rgp;
+  p[2] = rgrftl_in_rgp;
+  p[3] = rglftl_in_rgp;
+
+  HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
+
+  m.header.stamp = ros::Time::now();
+  m.header.frame_id = "/base_footprint";
+  m.ns = ns;
+  m.type = visualization_msgs::Marker::MESH_RESOURCE;
+  m.action = visualization_msgs::Marker::ADD;
+  m.scale.x = 1.0;
+  m.scale.y = 1.0;
+  m.scale.z = 1.0;
+  m.color.r = r;
+  m.color.g = g;
+  m.color.b = b;
+  m.color.a = 1.0;
 
   // palm
   m.mesh_resource = arm_meshes_[9];

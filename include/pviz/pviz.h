@@ -158,6 +158,8 @@ class PViz
 
     void getGripperMeshesMarkerMsg(const geometry_msgs::Pose &pose, double hue, std::string ns, int id, bool open, std::vector<visualization_msgs::Marker> &markers);
 
+    void getGripperMeshesMarkerMsg(const geometry_msgs::Pose &pose, double hue, std::string ns, int id, double position, std::vector<visualization_msgs::Marker> &markers);
+
     void multiply(const geometry_msgs::Pose &a, const geometry_msgs::Pose &b, geometry_msgs::Pose &c);
 
     void visualizeText(double x, double y, double z, double size, std::string text, int hue, std::string ns, int id);
