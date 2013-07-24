@@ -1832,7 +1832,7 @@ void PViz::getGripperMeshesMarkerMsg(const geometry_msgs::Pose &pose, double hue
   rgrfl_in_rgp.orientation.x = 0.0;
   rgrfl_in_rgp.orientation.y = 0.0;
   rgrfl_in_rgp.orientation.z = 0.004;
-  rgrfl_in_rgp.orientation.x = 1.000;
+  rgrfl_in_rgp.orientation.w = 1.000;
   multiply(rgrfl_in_rgp, rot, rgrfl_in_rgp);
 
   // r_gripper_l_finger_link in r_gripper_palm
@@ -1843,7 +1843,7 @@ void PViz::getGripperMeshesMarkerMsg(const geometry_msgs::Pose &pose, double hue
   rglfl_in_rgp.orientation.x = 0.0;
   rglfl_in_rgp.orientation.y = 0.0;
   rglfl_in_rgp.orientation.z = -0.004;
-  rglfl_in_rgp.orientation.x = 1.000;
+  rglfl_in_rgp.orientation.w = 1.000;
     
   // r_gripper_r_finger_tip_link in r_gripper_r_finger_link
   static geometry_msgs::Pose rgrftl_in_rgrfl;
