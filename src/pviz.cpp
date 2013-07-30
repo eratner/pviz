@@ -1405,7 +1405,8 @@ void PViz::visualizeRobotMeshes(double hue, std::string ns, int id, std::vector<
       marker_array_.markers[i].color.b = b;
       marker_array_.markers[i].color.a = 0.4;
     }
-    marker_array_.markers[i].lifetime = ros::Duration(120.0);
+    //marker_array_.markers[i].lifetime = ros::Duration(120.0);
+    marker_array_.markers[i].lifetime = ros::Duration(0.0);
 
     //ROS_INFO("i=%d",i);
     marker_array_.markers[i].mesh_resource = robot_meshes_[i];
