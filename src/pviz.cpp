@@ -14,6 +14,7 @@ static std::string RIGHT_CHAIN_LTIP_NAME = "r_gripper_l_finger_tip_link";
 static std::string LEFT_CHAIN_RTIP_NAME = "l_gripper_r_finger_tip_link";
 static std::string LEFT_CHAIN_LTIP_NAME = "l_gripper_l_finger_tip_link";
 
+static std::string HEAD_MESH = "package://pviz/head.stl";
 
 void HSVtoRGB( double *r, double *g, double *b, double h, double s, double v )
 {
@@ -1411,6 +1412,32 @@ void PViz::visualizeRobotMeshes(double hue, std::string ns, int id, std::vector<
     //ROS_INFO("i=%d",i);
     marker_array_.markers[i].mesh_resource = robot_meshes_[i];
   }
+
+  // add head
+  visualization_msgs::Marker m = marker_array_.markers[1];
+  m.id = marker_array_.markers.back().id+1;
+  m.scale.x = 0.025; m.scale.y = 0.025; m.scale.z = 0.025;
+  m.color.r = 1;
+  m.color.g = 140.0/255.0;
+  m.color.b = 0;
+  m.color.a = 1;
+  m.mesh_use_embedded_materials = false;
+
+  m.pose.position.x += 0.04;
+  m.pose.position.z += 0.39;
+  /*
+  // No pitch forward:
+  m.pose.orientation.x = 0.008726535498373064;
+  m.pose.orientation.w = 00.9999619230642669;
+  m.pose.orientation.z = 0;
+  m.pose.orientation.y = 0;
+  */
+  m.pose.orientation.x = 0.008693328396189642;
+  m.pose.orientation.y = 0.08715242412403289;
+  m.pose.orientation.z = 0.0007605676829741837;
+  m.pose.orientation.w = 0.9961567660501354;
+  m.mesh_resource = HEAD_MESH;
+  marker_array_.markers.push_back(m);
 
   marker_array_publisher_.publish(marker_array_);
 }
