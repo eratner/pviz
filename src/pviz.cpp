@@ -102,7 +102,7 @@ PViz::PViz() : ph_("~")
   side_full_.push_back("left");
 
   // arm meshes
-  arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_yaw.stl");
+  arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_pan.dae");
   arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_lift.dae");
   arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/upper_arm_roll.dae");
   arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/upper_arm.dae");
@@ -114,13 +114,9 @@ PViz::PViz() : ph_("~")
   arm_meshes_.push_back("package://pr2_description/meshes/gripper_v0/gripper_palm.dae");
 
   // gripper meshes
-  //gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/upper_finger_r.stl");
   gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/l_finger.dae");
-  //gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/finger_tip_r.stl");
   gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/l_finger_tip.dae");
-  // gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/upper_finger_l.stl");
   gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/l_finger.dae");  
-  // gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/finger_tip_l.stl");
   gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/l_finger_tip.dae");
 
   // torso_meshes
