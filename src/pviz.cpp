@@ -65,7 +65,7 @@ void HSVtoRGB( double *r, double *g, double *b, double h, double s, double v )
 	}
 }
 
-PViz::PViz() : ph_("~")
+PViz::PViz(const std::string &ns) : ph_("~")
 {
   num_joints_ = 8; //arm + torso
   reference_frame_ = "/map"; // maybe should be base_footprint?
@@ -138,8 +138,20 @@ PViz::PViz() : ph_("~")
     fflush(stdout);
   }
 
-  marker_array_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 500);
-  marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 1000);
+  if(ns.size() > 0)
+  {
+    std::stringstream ss;
+    ss << "/" << ns << "/visualization_marker_array";
+    marker_array_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>(ss.str(), 500);
+    ss.str(std::string());
+    ss << "/" << ns << "/visualization_marker";
+    marker_publisher_ = nh_.advertise<visualization_msgs::Marker>(ss.str(), 1000);
+  }
+  else
+  {
+    marker_array_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 500);
+    marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 1000);
+  }
 }
 
 PViz::~PViz()

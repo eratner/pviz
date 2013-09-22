@@ -34,7 +34,7 @@ class PViz
 {
   public:
     
-    PViz();
+    PViz(const std::string &ns = std::string());
 
     ~PViz();
 
