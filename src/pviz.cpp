@@ -715,7 +715,7 @@ void PViz::visualizeSphere(std::vector<double> pose, int color, std::string text
   marker_publisher_.publish(marker);
 }
 
-void PViz::visualizeSphere(double x, double y, double z, double radius, int hue, std::string ns, int id)
+void PViz::visualizeSphere(double x, double y, double z, double radius, int hue, std::string ns, int id, double duration)
 {
   double r=0,g=0,b=0;
   visualization_msgs::Marker marker;
@@ -737,7 +737,7 @@ void PViz::visualizeSphere(double x, double y, double z, double radius, int hue,
   marker.color.g = g;
   marker.color.b = b;
   marker.color.a = 1.0;
-  marker.lifetime = ros::Duration(0.0);
+  marker.lifetime = ros::Duration(duration);
   marker_publisher_.publish(marker);
 }
 

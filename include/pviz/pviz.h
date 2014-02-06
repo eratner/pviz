@@ -87,7 +87,7 @@ class PViz
     void visualize3DPath(std::vector<std::vector<double> > &dpath);
 
      /* \brief display a sphere */
-    void visualizeSphere(double x, double y, double z, double radius, int hue, std::string ns, int id);
+    void visualizeSphere(double x, double y, double z, double radius, int hue, std::string ns, int id, double duration = 0.0);
 
     void visualizeSphere(std::vector<double> pose, int color, std::string text, double radius);
     
